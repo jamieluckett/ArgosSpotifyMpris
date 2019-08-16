@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # Spotify argos extension
 # by Jamie Luckett https://github.com/jamieluckett
-
+import base64
 import os
 import traceback
 
+import requests
 from gi.repository.GLib import GError
 from pydbus import SessionBus
 
@@ -21,6 +22,13 @@ UNCLICKABLE_COLOUR = "#888888"
 
 
 def argos_print(body, **kwargs):
+    def arg_format(arg):
+        name = arg[0]
+        value = arg[1]
+        if type(value) == str and ' ' in value:
+            return "{0}='{1}'".format(name, value)
+        return "{0}={1}".format(name, value)
+
     if kwargs:
         arguments = " ".join([arg_format(arg) for arg in kwargs.items()])
         print("{0} | {1}".format(body, arguments))
@@ -32,17 +40,15 @@ def print_argos_separator():
     print("---")
 
 
-def arg_format(arg):
-    name = arg[0]
-    value = arg[1]
-    if ' ' in value:
-        return "{0}='{1}'".format(name, value)
-    return "{0}={1}".format(name, value)
-
-
 def get_spotify_object():
     bus = SessionBus()
     return bus.get(BUS_NAME, OBJECT_PATH)
+
+
+def get_art(art_url):
+    image = requests.get(art_url).content
+    b64_encoded = base64.b64encode(image)
+    return repr(b64_encoded)[1:]
 
 
 def print_control_menu(playback_status):
@@ -75,7 +81,7 @@ if __name__ == "__main__":
     try:
         spotify_object = get_spotify_object()
         metadata = spotify_object.Metadata
-        if os.environ.get("DEBUG", 0) == "1":
+        if os.environ.get("DEBUG") == "1":
             print(metadata)
         artist_list = metadata['xesam:artist']
         if artist_list:
@@ -98,6 +104,7 @@ if __name__ == "__main__":
             else:
                 argos_print("Artist: {0}".format(", ".join(artist_list)), color=UNCLICKABLE_COLOUR)
             print_control_menu(playback_status)
+            argos_print("", image=get_art(art_url), imageWidth="200")
         else:
             argos_print("Nothing Playing", iconName="media-playback-stop")
 
