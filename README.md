@@ -9,5 +9,5 @@ The following Python library is needed. To quickly install, a requirements.txt f
 * [pydbus](https://github.com/LEW21/pydbus)
 
 # Screenshots
-[Menu Open](images/menu_open.png)
-[Taskbar](images/taskbar.png)
+![Menu Open](images/menu_open.png?raw=true)
+![Taskbar](images/taskbar.png?raw=true)
