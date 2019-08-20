@@ -3,9 +3,9 @@
 # by Jamie Luckett https://github.com/jamieluckett
 
 import base64
+import hashlib
 import os
 import traceback
-import hashlib
 
 import requests
 from gi.repository.GLib import GError
