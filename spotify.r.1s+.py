@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # Spotify argos extension
 # by Jamie Luckett https://github.com/jamieluckett
+
 import base64
 import os
 import traceback
@@ -26,7 +27,8 @@ def argos_print(body, **kwargs):
     :type body: str
     """
     def arg_format(arg):
-        """"""
+        """Reads in passed argument and generates line to put after pipe in argos.
+        Wraps values with spaces in quotation marks."""
         name = arg[0]
         value = arg[1]
         if type(value) == str and ' ' in value:
@@ -41,30 +43,31 @@ def argos_print(body, **kwargs):
 
 
 def print_argos_separator():
-    """Prints an argos line seperator (---)"""
+    """Prints an argos line separator (---)"""
     print("---")
 
 
 def get_spotify_object():
-    """Gets Spotify current song information from dbus via pydbus
+    """Gets Spotify current song information from dbus via pydbus.
     :rtype CompositeObject"""
     bus = SessionBus()
     return bus.get(BUS_NAME, OBJECT_PATH)
 
 
 def get_art(art_url):
-    """GETs the image from art_url and base64 encodes it
+    """GETs the image from art_url and base64 encodes it.
     :type art_url: string
     :rtype string
     """
     image = requests.get(art_url).content
     b64_encoded = base64.b64encode(image)
     # Return the encoded image without the pesky b' at the beginning
+    # TODO - Find a nicer way to return this byte object as a string without b'
     return repr(b64_encoded)[1:]
 
 
 def print_control_menu(playback_status):
-    """Prints the music control menu options
+    """Prints the music control menu options.
     :type playback_status: str
     """
     if playback_status in ["Stopped", "Paused"]:
