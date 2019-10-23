@@ -1,2 +1,4 @@
 pydbus
 requests
+pycairo
+PyGObject
