@@ -41,6 +41,12 @@ PLAYBACK_STATUS_ICON_MAPPING = {
 BUS_NAME = "org.mpris.MediaPlayer2.spotify"  # Spotify dbus bus name
 OBJECT_PATH = "/org/mpris/MediaPlayer2"
 
+# Currently (05/05/2020) - The artURL returned by Spotify's MPRIS data 404s.
+# It is however possible to get the image from a different cdn server by building the URL out of
+# this domain and the ID in the provided artURL.
+# https://community.spotify.com/t5/Desktop-Linux/MPRIS-cover-art-url-file-not-found/m-p/4929877/highlight/true#M19504
+BACKUP_ART_URL = "https://i.scdn.co/image/"
+
 Song = namedtuple("Song", "title primary_artist playback_status art_url artist_list album_name")
 
 
@@ -118,7 +124,11 @@ def get_art(art_url):
         with open(image_location, 'r') as f:
             return f.read()
     except FileNotFoundError:
-        image = requests.get(art_url).content
+        request = requests.get(art_url)
+        if request.status_code != 200:
+            # Use BACKUP_ART_URL domain to get art
+            request = requests.get(BACKUP_ART_URL + art_url.split('/')[4])
+        image = request.content
         b64_encoded = base64.b64encode(image)
         # TODO - Find a nicer way to return this byte object as a string without b'
         b64_string = repr(b64_encoded)[1:]
