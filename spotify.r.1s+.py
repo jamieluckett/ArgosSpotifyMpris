@@ -76,7 +76,7 @@ def make_image_cache_dir(directory_path=IMAGE_CACHE_DIR):
         os.makedirs(directory_path, exist_ok=True)
         return True
     except Exception:
-        debug_print("Failed to create Image Cache directory {0}".format(directory_path))
+        debug_print(f"Failed to create image cache directory '{directory_path}'")
         # For some reason the above makedirs failed (even with exist_ok set to True...)
         # So we'll just check that directory_path is a directory and continue.
         return os.path.isdir(directory_path)
@@ -95,12 +95,12 @@ def argos_print(body="", **kwargs):
         value = arg[1]
         if type(value) == str and ' ' in value:
             # Arguments with spaces in must be wrapped in quotation marks
-            return "{0}='{1}'".format(name, value)
-        return "{0}={1}".format(name, value)
+            return f"{name}='{value}'"
+        return f"{name}={value}"
 
     if kwargs:
         arguments = " ".join([arg_format(arg) for arg in kwargs.items()])
-        print("{0} | {1}".format(body, arguments))
+        print(f"{body} | {arguments}")
     else:
         print(body)
 
@@ -216,20 +216,19 @@ def print_song(song):
     Prints the current song's information and album art, along with the relevant controls for the playback state.
     :param song: Song: Song to print to the navbar.
     """
-    argos_print("{0} - {1}".format(song.primary_artist, song.title),
+    argos_print(f"{song.primary_artist} - {song.title}",
                 iconName=PLAYBACK_STATUS_ICON_MAPPING[song.playback_status],
                 useMarkup="false",
                 unescape="true")
     print_argos_separator()
-    argos_print("Song Title: {0}".format(song.title), color=UNCLICKABLE_COLOUR, useMarkup="false")
-    argos_print("Album: {0}".format(song.album_name), color=UNCLICKABLE_COLOUR, useMarkup="false")
+    argos_print(f"Song Title: {song.title}", color=UNCLICKABLE_COLOUR, useMarkup="false")
+    argos_print(f"Album: {song.album_name}", color=UNCLICKABLE_COLOUR, useMarkup="false")
 
     if len(song.artist_list) > 1:
         # Spotify never seems to actually return more than 1 artist through mpris, but maybe one day...
-        argos_print("Artists: {0}".format(", ".join(song.artist_list)),
-                    color=UNCLICKABLE_COLOUR, useMarkup="false")
+        argos_print(f"Artists: {', '.join(song.artist_list)}", color=UNCLICKABLE_COLOUR, useMarkup="false")
     else:
-        argos_print("Artist: {0}".format(song.artist_list[0]), color=UNCLICKABLE_COLOUR, useMarkup="false")
+        argos_print(f"Artist: {song.artist_list[0]}", color=UNCLICKABLE_COLOUR, useMarkup="false")
     print_control_menu(song.playback_status)
     # TODO - Make clicking the album art bring spotify to the foreground.
     argos_print(image=get_art(song.art_url), imageWidth=IMAGE_WIDTH)
@@ -259,7 +258,7 @@ def main():
 
         exception_txt_formatted = str(ext_modules_error).replace("\n", "\\n")
         argos_print(
-            "ModuleNotFoundError: {0}".format(exception_txt_formatted),
+            f"ModuleNotFoundError: {exception_txt_formatted}",
             font="monospace",
             useMarkup="false",
             unescape="true"
