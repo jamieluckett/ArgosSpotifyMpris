@@ -24,7 +24,7 @@ except ModuleNotFoundError as e:
 
 # USER CONFIGURATION ############################################################################
 # Directory to cache previously loaded album art in                                             #
-IMAGE_CACHE_DIR = ".config/argos/spotify/"                                                      #
+IMAGE_CACHE_DIR = "~/.config/argos/spotify/"                                                      #
 # Icon definitions - icons can be the icon of a program or any built-in GNOME icon              #
 SPOTIFY_ICON = "spotify-client"                                                                 #
 PAUSE_ICON = "media-playback-pause"                                                             #
@@ -231,7 +231,9 @@ def print_song(song):
         argos_print(f"Artist: {song.artist_list[0]}", color=UNCLICKABLE_COLOUR, useMarkup="false")
     print_control_menu(song.playback_status)
     # TODO - Make clicking the album art bring spotify to the foreground.
-    argos_print(image=get_art(song.art_url), imageWidth=IMAGE_WIDTH)
+    art = get_art(song.art_url)
+    if os.environ.get("DEBUG", 0) == 0:
+        argos_print(image=art, imageWidth=IMAGE_WIDTH)
 
 
 def print_last_exception():
